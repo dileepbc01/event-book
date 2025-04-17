@@ -3,7 +3,7 @@ import React from 'react'
 
 const page = () => {
   return (
-    <BookEvent  eventTitle={""}/>
+    <BookEvent />
   )
 }
 

@@ -1,20 +1,34 @@
+import { useEvent } from '@/hooks/useEvents';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 
-const BookEvent = ({ eventTitle }: { eventTitle: string }) => {
+const BookEvent = () => {
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const router= useRouter()
+
+  const {error,event:eventDetails,loading}=useEvent(router.query.id as string);
+
+  if(error){
+    return <div>Error: {error}</div>;
+  }
+
+  if(loading || !eventDetails){
+    return <div>Loading...</div>;
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSuccessMessage(`Thank you, ${name}, for booking "${eventTitle}"!`);
+    setSuccessMessage(`Thank you, ${name}, for booking "${eventDetails.name}"!`);
     setName('');
     setEmail('');
   };
-
+  console.log(eventDetails)
   return (
     <div className="p-4 border rounded shadow-md">
-      <h2 className="text-lg font-bold mb-4">Book Event: {eventTitle}</h2>
+      <h2 className="text-lg font-bold mb-4">Book Event: {eventDetails.name}</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-1" htmlFor="name">

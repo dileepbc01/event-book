@@ -5,28 +5,24 @@ import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 
 const END_POINT =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+  (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000") + "/api/";
 
 export const getEventSchema = z.object({
-  id: z.string().refine((id) => !isNaN(Number(id)), {
-    message: "Invalid event ID",
-  }),
+  id: z.string(),
 });
 
 export type GetEventType = z.infer<typeof getEventSchema>;
 
 const eventsApi = {
-  getEvent: async ({ id }: GetEventType) => {
+  getEvent: async (params: GetEventType) => {
     const { data } = await api.get(`${END_POINT}/get-event`, {
-      params: {
-        event_id: id,
-      },
+      params: params,
     });
     return data as Database["public"]["Tables"]["events"]["Row"];
   },
   getEvents: async () => {
     const { data } = await api.get(`${END_POINT}/events`);
-    return data as Database["public"]["Tables"]["events"];
+    return data as Database["public"]["Tables"]["events"]["Row"][];
   },
 };
 
@@ -36,7 +32,7 @@ export const api = axios.create({
 
 export const useEvents = () => {
   const [events, setEvents] = useState<
-    Database["public"]["Tables"]["events"] | null
+    Database["public"]["Tables"]["events"]["Row"][] | null
   >(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);

@@ -8,32 +8,21 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { id } = req.query;
-
-  if (!id || typeof id !== "string") {
-    return res
-      .status(400)
-      .json({ message: "Event ID is required and must be a string" });
-  }
-
   try {
     const supabase = getSupabaseClient();
-    const validatedData = getEventSchema.parse(req.body);
-    console.log(validatedData);
-    // Fetch the event by ID
+    const validatedData = getEventSchema.parse(req.query);
+
     const { data: event, error } = await supabase
       .from("events")
       .select("*")
-      .eq("id", parseInt(id))
+      .eq("id", Number(validatedData.id))
       .single();
 
     if (error) {
       throw new Error(error.message);
     }
 
-    return res
-      .status(200)
-      .json({ message: "Event fetched successfully", event });
+    return res.status(200).json(event);
   } catch (error: any) {
     if (error instanceof z.ZodError) {
       return res

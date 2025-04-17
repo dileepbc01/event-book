@@ -2,30 +2,39 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Button } from '@/components/ui/button';
 import React from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
+import { useEvents } from '@/hooks/useEvents';
+import Link from 'next/link';
 
 
 
 const Events = () => {
-  const eventList = [
-    { id: 1, title: 'Music Concert', date: '2025-04-20', location: 'City Hall' },
-    { id: 2, title: 'Art Exhibition', date: '2025-04-22', location: 'Art Gallery' },
-    { id: 3, title: 'Tech Conference', date: '2025-04-25', location: 'Convention Center' },
-  ];
+
+  const {events,error,loading}=useEvents();
+
+  if(error){
+    return <div>Error: {error}</div>;
+  }
+  if(loading || !events){
+    return <div>Loading...</div>;
+  }
+
 
   return (
     <AppLayout>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {eventList.map((event) => (
+        {events&&events.map((event) => (
           <Card key={event.id} className="shadow-md">
             <CardHeader>
-              <CardTitle>{event.title}</CardTitle>
+              <CardTitle>{event.name}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>Date: {event.date}</p>
-              <p>Location: {event.location}</p>
+              <p>Date: {event.start_time}</p>
+              <p>Location: {event.end_time}</p>
             </CardContent>
             <CardFooter>
+              <Link href={`/events/${event.id}/book`} passHref>
               <Button variant="default">Book Now</Button>
+              </Link>
             </CardFooter>
           </Card>
         ))}
