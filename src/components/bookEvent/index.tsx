@@ -1,3 +1,4 @@
+import useBookEvent from '@/hooks/useBookEvent';
 import { useEvent } from '@/hooks/useEvents';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
@@ -7,7 +8,9 @@ const BookEvent = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const router= useRouter()
+  const router= useRouter();
+
+  const {bookEvent,loading:isBooking}=useBookEvent()
 
   const {error,event:eventDetails,loading}=useEvent(router.query.id as string);
 
@@ -19,9 +22,16 @@ const BookEvent = () => {
     return <div>Loading...</div>;
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
-    setSuccessMessage(`Thank you, ${name}, for booking "${eventDetails.name}"!`);
+    await bookEvent({
+      email: email,
+      full_name: name,
+      end_time:(new Date()).toISOString(),
+      start_time: (new Date()).toISOString(),
+      event_id: eventDetails.id,
+      additional_notes: 'No additional notes',      
+    });
     setName('');
     setEmail('');
   };
@@ -60,7 +70,9 @@ const BookEvent = () => {
           type="submit"
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
-          Book Now
+          {
+            isBooking ? 'Booking...' : 'Book Now'
+          }
         </button>
       </form>
       {successMessage && (

@@ -2,7 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getSupabaseClient } from "../../lib/supabase";
 import { z } from "zod";
-import { getEventSchema } from "@/hooks/useEvents";
+import { getEventSchema } from "@/hooks/api";
 
 export default async function handler(
   req: NextApiRequest,

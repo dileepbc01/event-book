@@ -1,34 +1,7 @@
-import axios from "axios";
 import { Database } from "../../database.types";
-import { z } from "zod";
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-
-const END_POINT =
-  (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000") + "/api/";
-
-export const getEventSchema = z.object({
-  id: z.string(),
-});
-
-export type GetEventType = z.infer<typeof getEventSchema>;
-
-const eventsApi = {
-  getEvent: async (params: GetEventType) => {
-    const { data } = await api.get(`${END_POINT}/get-event`, {
-      params: params,
-    });
-    return data as Database["public"]["Tables"]["events"]["Row"];
-  },
-  getEvents: async () => {
-    const { data } = await api.get(`${END_POINT}/events`);
-    return data as Database["public"]["Tables"]["events"]["Row"][];
-  },
-};
-
-export const api = axios.create({
-  baseURL: process.env.END_POINT,
-});
+import { eventsApi, getEventSchema } from "./api";
 
 export const useEvents = () => {
   const [events, setEvents] = useState<
